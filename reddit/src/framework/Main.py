@@ -18,4 +18,4 @@ if __name__ == '__main__':
 
     r = Reddit(namespace, subreddits)
 
-    r.get_subreddit(10)
+    r.merge_requests(10)

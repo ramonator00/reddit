@@ -30,7 +30,7 @@ class FileHandler(object):
 
         return dict_sections
 
-    def read_csv(self, attribute) -> list:
+    def read_csv(self, attribute: str) -> list:
         """
         This method return a list of given csv file attribute
         :attribute: Desired Column Name of a given csv file

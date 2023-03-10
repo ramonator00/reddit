@@ -13,7 +13,7 @@ class SentimentAnalyzer(object):
         self.__model = AutoModelForSequenceClassification.from_pretrained("ProsusAI/finbert")
         self.__tokenizer = AutoTokenizer.from_pretrained("ProsusAI/finbert")
 
-    def analyze_data(self, data) -> pd.DataFrame:
+    def analyze_data(self, data: pd.DataFrame) -> pd.DataFrame:
         """
         This method analyzes data and calculates a sentiment
         :id: id of post

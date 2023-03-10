@@ -17,4 +17,4 @@ grant_type=<PASSWORD OR TOKEN>
 url=<URL>
 oauth_url=<URL>
 ```
-If, for example, no proxy has to be used, the environment variable can be set to `None`.
+If no proxy has to be used, the environment variable can be set to `None`.
