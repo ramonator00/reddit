@@ -16,6 +16,8 @@ if __name__ == '__main__':
     namespace = x.read_config()
     subreddits = fh_subred.read_csv('subreddits')
 
+    search_terms = ['pibslers']
+
     r = Reddit(namespace, subreddits)
 
-    r.merge_requests(10)
+    r.merge_requests(10, search_terms)

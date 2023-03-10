@@ -17,10 +17,11 @@ class Reddit(object):
         self.__namespace = namespace
         self.__subreddits = subreddits
 
-    def get_subreddit(self, limit: int) -> Type[DataFrame]:
+    def get_subreddit(self, limit: int, search_term: list) -> Type[DataFrame]:
         """
         This method executes the connection to a given api and returns the data from api
         :limit: number of subreddits
+        :search_term: list of search terms
         :return: df with subreddits data
         """
         all_posts = []
@@ -39,29 +40,32 @@ class Reddit(object):
             reddit = api_con.praw_connector()
 
             for subreddit in self.__subreddits:
-                posts = reddit.subreddit(subreddit).hot(limit=limit)
+                posts = reddit.subreddit(subreddit)
 
-                for post in posts:
-                    all_posts.append([post.title, post.score, post.id, post.subreddit, post.url, post.num_comments,
-                                      post.selftext, post.created])
+                for query in search_term:
 
-                    df = pd.DataFrame(all_posts, columns=['title', 'score', 'id', 'subreddit', 'url',
-                                                          'num_comments', 'body', 'created'])
+                    for post in posts.search(query):
+                        all_posts.append([post.title, post.score, post.id, post.subreddit, post.url, post.num_comments,
+                                          post.selftext, post.created])
 
-                sentiments = bert.analyze_data(df)
+                        df = pd.DataFrame(all_posts, columns=['title', 'score', 'id', 'subreddit', 'url',
+                                                              'num_comments', 'body', 'created'])
 
-                new_df = pd.merge(df, sentiments, on='title')
+                    sentiments = bert.analyze_data(df)
+
+                    new_df = pd.merge(df, sentiments, on='title')
 
         except Exception as e:
             logging.error(f'Something went wrong while fetching subreddits: {e}')
 
         return new_df
 
-    def get_comments(self, limit: int) -> Type[DataFrame]:
+    def get_comments(self, limit: int, search_term: list) -> Type[DataFrame]:
         """
         This method reads comments from reddit
         :limit: Number of subreddits
-        :return:
+        :search_term: list of search terms
+        :return: df with comments
         """
         df_comments = pd.DataFrame
         all_comments = []
@@ -75,7 +79,7 @@ class Reddit(object):
 
             reddit = api_con.praw_connector()
 
-            subreddits = self.get_subreddit(limit)
+            subreddits = self.get_subreddit(limit, search_term)
 
             for id in subreddits['id']:
                 submission = reddit.submission(id=id)
@@ -89,14 +93,15 @@ class Reddit(object):
 
         return df_comments
 
-    def merge_requests(self, limit: int):
+    def merge_requests(self, limit: int, search_term: list) -> DataFrame:
         """
         This method merges all requests together
         :limit: Number of subreddits
+        :search_term: list of search terms
         :return: df_merged
         """
-        subreddits = self.get_subreddit(limit)
-        comments = self.get_comments(limit)
+        subreddits = self.get_subreddit(limit, search_term)
+        comments = self.get_comments(limit, search_term)
 
         merged_df = pd.merge(subreddits, comments, on='id')
 
