@@ -55,6 +55,8 @@ class Reddit(object):
 
                     new_df = pd.merge(df, sentiments, on='title')
 
+                    new_df.to_csv('output_cs_buri_1.csv', sep=';')
+
         except Exception as e:
             logging.error(f'Something went wrong while fetching subreddits: {e}')
 
@@ -105,7 +107,9 @@ class Reddit(object):
 
         merged_df = pd.merge(subreddits, comments, on='id')
 
-        merged_df.to_csv('output.csv')
+        print(merged_df)
+
+        merged_df.to_csv('withcomments.csv')
 
         return merged_df
 
